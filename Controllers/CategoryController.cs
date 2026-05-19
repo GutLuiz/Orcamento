@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace Orcamento.Controllers
 {
-    // um endpoint que somente pessoas autorizadas podem acessar (criar categorias)
     [ApiController]
     [Route("categories")]
     [Authorize]

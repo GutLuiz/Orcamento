@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Orcamento.Data;
 using Orcamento.Models;
-using System.Security.Claims;
 
 namespace Orcamento.Services
 {
@@ -48,8 +46,8 @@ namespace Orcamento.Services
 
         public async Task<Category?> DeletarCategoria(int categoryId, int userId)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == categoryId 
-            && c.UserId == userId);
+            var category = await _context.Categories.FirstOrDefaultAsync(c =>
+            c.Id == categoryId && c.UserId == userId);
 
             if(category == null)
             {
@@ -74,7 +72,6 @@ namespace Orcamento.Services
 
             category.Name = categoryName;
 
-            _context.Categories.Update(category);
             await _context.SaveChangesAsync();
 
             return category;

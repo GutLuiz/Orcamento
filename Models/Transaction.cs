@@ -1,4 +1,6 @@
-﻿namespace Orcamento.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Orcamento.Models
 {
     public class Transaction
     {
@@ -14,6 +16,9 @@
 
         public int CategoryId { get; set; }
         public Category ? Category { get; set; }
+     
+        [NotMapped]
+        public string CategoryName { get; set; } = string.Empty;
 
         public int UserId { get; set; }
         public User ? User { get; set; }

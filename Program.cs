@@ -61,6 +61,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<TransacoesService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
