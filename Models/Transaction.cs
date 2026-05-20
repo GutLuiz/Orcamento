@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Orcamento.Models
 {
@@ -15,9 +16,12 @@ namespace Orcamento.Models
         public DateTime Date { get; set; }
 
         public int CategoryId { get; set; }
+
+        [JsonIgnore]
         public Category ? Category { get; set; }
      
         [NotMapped]
+
         public string CategoryName { get; set; } = string.Empty;
 
         public int UserId { get; set; }

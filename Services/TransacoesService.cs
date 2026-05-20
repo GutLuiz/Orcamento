@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orcamento.Data;
 using Orcamento.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Orcamento.Services
 {
@@ -54,7 +53,11 @@ namespace Orcamento.Services
                 return null;
             }
 
-            return await query.ToListAsync();
+            var lista = await query.ToListAsync();
+
+            lista.ForEach(t => t.CategoryName = t.Category?.Name);
+
+            return lista;
         }
 
         public async Task<Transaction?> DeletarCategorias(int transactionId, int userId)

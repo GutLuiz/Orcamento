@@ -9,28 +9,30 @@ namespace Orcamento.Services
     public class DashboardService
     {
         private readonly AppDbContext _context;
-        private readonly DateTime _inicioMesAtual;
-        private readonly DateTime _hoje;
+      
 
         public DashboardService(AppDbContext context)
         {
             _context = context;
 
-            _inicioMesAtual = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-
-            _hoje = DateTime.Now;
         }
-        
-        public async Task<CardsDto> BuscarValoresCards(int userId)
+
+        public async Task<CardsDto> BuscarValoresCards(int userId, int? mes = null, int? ano = null)
         {
+            int mesRef = mes ?? DateTime.Today.Month;
+            int anoRef = ano ?? DateTime.Today.Year;
+
+            DateTime inicio = new DateTime(anoRef, mesRef, 1);
+            DateTime fim = new DateTime(anoRef, mesRef + 1, 1);
+
             var receita = await _context.Transactions
-                .Where(t => t.UserId == userId && t.Type == TransactionType.Income && 
-                    t.Date >= _inicioMesAtual)
+                .Where(t => t.UserId == userId && t.Type == TransactionType.Income &&
+                   t.Date >= inicio && t.Date < fim)
                 .SumAsync(t => t.Amount);
 
             var despesa = await _context.Transactions
                 .Where(t => t.UserId == userId && t.Type == TransactionType.Expense &&
-                    t.Date >= _inicioMesAtual)
+                    t.Date >= inicio && t.Date < fim)
                 .SumAsync(t => t.Amount);
 
             return new CardsDto
@@ -40,11 +42,18 @@ namespace Orcamento.Services
                 saldoAtual = receita - despesa
             };
         }
-        public async Task<List<GraficoDto>> BuscarValoresGraficoDespesas(int userId)
+        public async Task<List<GraficoDto>> BuscarValoresGraficoDespesas(int userId, int? mes = null, int? ano = null)
         {
+
+            int mesRef = mes ?? DateTime.Today.Month;
+            int anoRef = ano ?? DateTime.Today.Year;
+
+            DateTime inicio = new DateTime(anoRef, mesRef, 1);
+            DateTime fim = new DateTime(anoRef, mesRef + 1, 1);
+
             return await _context.Transactions.Where(
                 t => t.UserId == userId && t.Type == TransactionType.Expense &&
-                    t.Date >= _inicioMesAtual).GroupBy(
+                     t.Date >= inicio && t.Date < fim).GroupBy(
                 C => C.Category.Name).Select(g => new GraficoDto
                 {
                     categoria = g.Key,
@@ -53,11 +62,17 @@ namespace Orcamento.Services
                 .Take(5)
                 .ToListAsync();
         }
-        public async Task<List<GraficoDto>>BuscarValoresGraficoReceitas(int userId)
+        public async Task<List<GraficoDto>>BuscarValoresGraficoReceitas(int userId, int? mes = null, int? ano = null)
         {
+            int mesRef = mes ?? DateTime.Today.Month;
+            int anoRef = ano ?? DateTime.Today.Year;
+
+            DateTime inicio = new DateTime(anoRef, mesRef, 1);
+            DateTime fim = new DateTime(anoRef, mesRef + 1, 1);
+
             return await _context.Transactions.Where(
                 t => t.UserId == userId && t.Type == TransactionType.Income &&
-                    t.Date >= _inicioMesAtual).GroupBy(
+                    t.Date >= inicio && t.Date < fim).GroupBy(
                 C => C.Category.Name).Select(g => new GraficoDto
                 {
                     categoria = g.Key,
@@ -67,11 +82,17 @@ namespace Orcamento.Services
                 .ToListAsync();
         }
 
-        public async Task<List<ListaDto>> BuscarValoresLista(int userId)
+        public async Task<List<ListaDto>> BuscarValoresListaRecentes(int userId, int? mes = null, int? ano = null)
         {
+            int mesRef = mes ?? DateTime.Today.Month;
+            int anoRef = ano ?? DateTime.Today.Year;
+
+            DateTime inicio = new DateTime(anoRef, mesRef, 1);
+            DateTime fim = new DateTime(anoRef, mesRef + 1, 1);
+
             return await _context.Transactions
                   .Where(t => t.UserId == userId &&
-                    t.Date >= _inicioMesAtual)
+                    t.Date >= inicio && t.Date < fim)
                   .Select(g => new ListaDto
                   {
                       Title = g.Title,
@@ -82,5 +103,10 @@ namespace Orcamento.Services
                     .Take(8)
                     .ToListAsync();
         }
+
+        //public async Task<List<ListaDto>> BuscarValoresListaMaioresTransacoes(int userId, int? mes = null, int? ano = null)
+        //{
+
+        //}
     }
 }

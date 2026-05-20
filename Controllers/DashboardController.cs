@@ -43,7 +43,7 @@ namespace Orcamento.Controllers
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            var dados = await _dashboardService.BuscarValoresLista(userId);
+            var dados = await _dashboardService.BuscarValoresListaRecentes(userId);
 
             return Ok(dados);
         }
