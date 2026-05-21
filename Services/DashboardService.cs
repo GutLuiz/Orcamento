@@ -100,13 +100,28 @@ namespace Orcamento.Services
                       date = g.Date, 
                       categoryName = g.Category.Name,
                   }).OrderByDescending(x => x.date)
-                    .Take(8)
+                    .Take(5)
                     .ToListAsync();
         }
 
-        //public async Task<List<ListaDto>> BuscarValoresListaMaioresTransacoes(int userId, int? mes = null, int? ano = null)
-        //{
+        public async Task<List<ListaDto>> BuscarValoresListaMaioresTransacoes(int userId, int? mes = null, int? ano = null)
+        {
+            int mesRef = mes ?? DateTime.Today.Month;
+            int anoRef = ano ?? DateTime.Today.Year;
 
-        //}
+            DateTime inicio = new DateTime(anoRef, mesRef, 1);
+            DateTime fim = new DateTime(anoRef, mesRef + 1, 1);
+
+            return await _context.Transactions.Where(t =>
+            t.UserId == userId && t.Date >= inicio && t.Date < fim).Select(g => new ListaDto
+            {
+                Title = g.Title,
+                amount = g.Amount,
+                date = g.Date,
+                categoryName = g.Category.Name,
+            }).OrderByDescending(x => x.amount)
+                    .Take(5)
+                    .ToListAsync();
+        }
     }
 }
