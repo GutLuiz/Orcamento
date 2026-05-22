@@ -44,7 +44,7 @@ namespace Orcamento.Services
 
             return user;
         }
-        public async Task<string?> LoginUsuario(LoginDto dto)
+        public async Task<(string AccessToken, string RefreshToken)?> LoginUsuario(LoginDto dto)
         {
             var usuarioExiste = await _context.Users.FirstOrDefaultAsync(t => t.Email == dto.Email);
 
@@ -60,9 +60,36 @@ namespace Orcamento.Services
                 return null;
             }
 
-            var token = _tokenService.GenerateToken(usuarioExiste);
+            var accessToken = _tokenService.GenerateAccessToken(usuarioExiste);
+            var refreshToken = await _tokenService.GenerateRefreshTokenAsync(usuarioExiste);
 
-            return token;
+            return (accessToken, refreshToken);
+        }
+        public async Task<(string AccessToken, string RefreshToken)?> RefreshToken(string refreshToken)
+        {
+            var resultado = await _tokenService.RefreshAsync(refreshToken);
+
+            if (resultado == null)
+            {
+                return null;
+            }
+
+            return resultado;
+        }
+        public async Task<bool> Logout(string refreshToken)
+        {
+            var stored = await _context.RefreshTokens
+                .FirstOrDefaultAsync(r => r.Token == refreshToken && r.IsActive);
+
+            if (stored == null)
+            {
+                return false;
+            }
+                
+            stored.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

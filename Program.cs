@@ -20,7 +20,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllers();
+
+// certo — valida primeiro, depois usa
+if (JwtSettings.Key.Length < 32)
+{
+    throw new InvalidOperationException("JWT key deve ter no mínimo 32 caracteres.");
+}
 
 var key = Encoding.ASCII.GetBytes(JwtSettings.Key);
 
@@ -31,7 +36,10 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    // isso aq sempre tem que estar tru em prod
+    // Isso permite tokens trafegarem em HTTP puro interceptável por qualquer um na rede. Em produção isso é grave.
+    options.RequireHttpsMetadata = true;
+
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -39,6 +47,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateIssuerSigningKey = true,
         ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
 
         ValidIssuer = JwtSettings.Issuer,
         ValidAudience = JwtSettings.Audience,

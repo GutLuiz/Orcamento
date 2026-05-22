@@ -29,15 +29,44 @@ namespace Orcamento.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login( LoginDto dto)
+        public async Task<IActionResult> Login(LoginDto dto)
         {
-            var token = await _authService.LoginUsuario(dto);
+            var resultado = await _authService.LoginUsuario(dto);
 
-            if(token == null)
+            if (resultado == null)
+                return Unauthorized("Email ou senha inválidos!");
+
+            return Ok(new
             {
-                return Unauthorized("Email ou senha invalidos!");
-            }
-            return Ok(new { token = token });
+                accessToken = resultado.Value.AccessToken,
+                refreshToken = resultado.Value.RefreshToken
+            });
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshDto dto)
+        {
+            var resultado = await _authService.RefreshToken(dto.RefreshToken);
+
+            if (resultado == null)
+                return Unauthorized("Refresh token inválido ou expirado.");
+
+            return Ok(new
+            {
+                accessToken = resultado.Value.AccessToken,
+                refreshToken = resultado.Value.RefreshToken
+            });
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] RefreshDto dto)
+        {
+            var sucesso = await _authService.Logout(dto.RefreshToken);
+
+            if (!sucesso)
+                return BadRequest("Token inválido.");
+
+            return Ok("Logout realizado com sucesso.");
         }
     }
 }
