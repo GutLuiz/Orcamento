@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Orcamento.Configuration;
-using Orcamento.Data;
+using Orcamento.Dtos.Data;
 using Orcamento.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,15 +12,17 @@ namespace Orcamento.Services
     public class TokenService
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public TokenService(AppDbContext context)
+        public TokenService(AppDbContext context,IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public string GenerateAccessToken(User user)
         {
-            var key = Encoding.ASCII.GetBytes(JwtSettings.Key);
+            var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]!);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -33,8 +34,8 @@ namespace Orcamento.Services
                     new Claim(ClaimTypes.Email, user.Email),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(60),
-                Issuer = JwtSettings.Issuer,
-                Audience = JwtSettings.Audience,
+                Issuer = _configuration["JwtSettings:Issuer"],
+                Audience = _configuration["JwtSettings:Audience"],
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature

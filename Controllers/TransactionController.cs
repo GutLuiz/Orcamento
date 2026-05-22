@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Orcamento.Data;
 using Orcamento.Models;
 using Orcamento.Services;
 using System.Security.Claims;
@@ -15,6 +13,8 @@ namespace Orcamento.Controllers
     {
         private readonly TransacoesService _transacoesService;
 
+        private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
         public TransactionController(TransacoesService transacoesService)
         {
             _transacoesService = transacoesService;
@@ -23,8 +23,7 @@ namespace Orcamento.Controllers
         [HttpPost]
         public async Task<IActionResult> CriarTransacao(Transaction transaction)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _transacoesService.CriarTransacoes(transaction,userId);
+            var result = await _transacoesService.CriarTransacoes(transaction, GetUserId());
            
             return Ok(result);
         }
@@ -32,16 +31,14 @@ namespace Orcamento.Controllers
         [HttpGet]
         public async Task<IActionResult> Buscartransacao(int? mes = null, int? ano = null)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _transacoesService.BuscarTransacoes(userId, mes, ano);
+            var result = await _transacoesService.BuscarTransacoes(GetUserId(), mes, ano);
 
             return Ok(result);
         }
         [HttpDelete("{transactionId}")]
         public async Task<IActionResult> DeletarCategoria(int transactionId)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _transacoesService.DeletarCategorias(transactionId, userId);
+            var result = await _transacoesService.DeletarCategorias(transactionId, GetUserId());
 
             if (result == null)
             {
@@ -53,12 +50,8 @@ namespace Orcamento.Controllers
         [HttpPut("{transactionId}")]
         public async Task<IActionResult> Update(int transactionId, Transaction transactions)
         {
-            var userId = int.Parse(
-               User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-             );
-
             var result = await _transacoesService.AtualizarTransacoes(
-                transactionId, userId, transactions);
+                transactionId, GetUserId(), transactions);
            
             if (result == null)
             {

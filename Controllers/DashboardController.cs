@@ -10,6 +10,8 @@ namespace Orcamento.Controllers
     {
         private readonly DashboardService _dashboardService;
 
+        private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
         public DashboardController(DashboardService dashboardService)
         {
             _dashboardService = dashboardService;
@@ -18,33 +20,23 @@ namespace Orcamento.Controllers
         [HttpGet("cards")]
         public async Task<IActionResult> GetCardsDashboard(int? mes = null, int? ano = null)
         {
-            var userId = int.Parse(
-                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-            );
-
-            var dados = await _dashboardService.BuscarValoresCards(userId,mes,ano);
+            var dados = await _dashboardService.BuscarValoresCards(GetUserId(), mes,ano);
 
             return Ok(dados);
         }
         [HttpGet("graficos")]
         public async Task<IActionResult> GetGraficoDashboard(int? mes = null, int? ano = null)
         {
-            var userId = int.Parse(
-                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-            );
-
-            var dadosDespesas = await _dashboardService.BuscarValoresGraficoDespesas(userId,mes,ano);
-            var dadosReceitas = await _dashboardService.BuscarValoresGraficoReceitas(userId,mes,ano);
+            var dadosDespesas = await _dashboardService.BuscarValoresGraficoDespesas(GetUserId(), mes,ano);
+            var dadosReceitas = await _dashboardService.BuscarValoresGraficoReceitas(GetUserId(), mes,ano);
 
             return Ok(new { dadosDespesas, dadosReceitas });
         }
         [HttpGet("listas")]
         public async Task<IActionResult> GetListaDashboard(int? mes = null, int? ano = null)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-            var dadosRecentes = await _dashboardService.BuscarValoresListaRecentes(userId,mes,ano);
-            var dadosMaiores = await _dashboardService.BuscarValoresListaMaioresTransacoes(userId,mes,ano);
+            var dadosRecentes = await _dashboardService.BuscarValoresListaRecentes(GetUserId(), mes,ano);
+            var dadosMaiores = await _dashboardService.BuscarValoresListaMaioresTransacoes(GetUserId(), mes,ano);
 
             return Ok(new { dadosRecentes, dadosMaiores });
         }

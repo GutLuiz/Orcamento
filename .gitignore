@@ -4,3 +4,4 @@ Configuration/
 *.user
 *.suo
 *.log
+appsettings.Development.json

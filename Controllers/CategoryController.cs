@@ -1,69 +1,56 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Orcamento.Data;
 using Orcamento.Models;
 using Orcamento.Services;
 using System.Security.Claims;
 
-namespace Orcamento.Controllers
+[ApiController]
+[Route("categories")]
+[Authorize]
+public class CategoryController : ControllerBase
 {
-    [ApiController]
-    [Route("categories")]
-    [Authorize]
-    public class CategoryController : ControllerBase
+    private readonly CategoryService _categoryService;
+
+    private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    public CategoryController(CategoryService categoryService)
     {
-        private readonly CategoryService _categoryService;
-        
-        public CategoryController(CategoryService categoryService)
-        {
-            _categoryService = categoryService;
-        }
+        _categoryService = categoryService;
+    }
 
+    [HttpPost]
+    public async Task<IActionResult> CriarCategoria(Category category)
+    {
+        var result = await _categoryService.CriarCategorias(category, GetUserId());
+        return Ok(result);
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> CriarCategoria(Category category)
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _categoryService.CriarCategorias(category, userId);
+    [HttpGet]
+    public async Task<IActionResult> BuscarCategoria()
+    {
+        var result = await _categoryService.BuscarCategorias(GetUserId());
+        return Ok(result);
+    }
 
-            return Ok(result);
-        }
+    [HttpDelete("{categoryId}")]
+    public async Task<IActionResult> RemoverCategoria(int categoryId)
+    {
+        var result = await _categoryService.DeletarCategoria(categoryId, GetUserId());
 
-        [HttpGet]
-        public async Task<IActionResult> BuscarCategoria()
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _categoryService.BuscarCategorias(userId);
+        if (result == null)
+            return NotFound();
 
-            return Ok(result);
-        }
+        return Ok(result);
+    }
 
-        [HttpDelete("{categoryId}")]
-        public async Task<IActionResult> RemoverCategoria(int categoryId)
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _categoryService.DeletarCategoria(categoryId, userId);
+    [HttpPut("{categoryId}")]
+    public async Task<IActionResult> AtualizarCategoria(int categoryId, [FromBody] Category categoryName)
+    {
+        var result = await _categoryService.AtualizarCategoria(categoryId, GetUserId(), categoryName.Name);
 
-            if(result == null)
-            {
-                return NotFound();
-            }
+        if (result == null)
+            return NotFound();
 
-            return Ok(result);
-        }
-
-        [HttpPut("{categoryId}")]
-        public async Task<IActionResult> AtualizarCategoria(int categoryId,[FromBody] Category categoryName)
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _categoryService.AtualizarCategoria(categoryId, userId, categoryName.Name);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
-        }
+        return Ok(result);
     }
 }
