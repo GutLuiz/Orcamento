@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orcamento.Models;
 
-namespace Orcamento.Dtos.Data
+namespace Orcamento.Data
 {
     // conexao com o banco
     public class AppDbContext : DbContext

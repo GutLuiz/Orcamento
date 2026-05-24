@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Orcamento.Dtos.Data;
+using Orcamento.Data;
 using Orcamento.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

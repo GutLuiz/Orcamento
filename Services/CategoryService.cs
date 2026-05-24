@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Orcamento.Dtos.Data;
+using Orcamento.Data;
 using Orcamento.Models;
 
 namespace Orcamento.Services

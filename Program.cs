@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Orcamento.Dtos.Data;
+using Orcamento.Data;
 using Orcamento.Services;
 using System.Text;
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Orcamento.Data;
 using Orcamento.Dtos;
-using Orcamento.Dtos.Data;
 using Orcamento.Models;
 using System.Reflection;
 
