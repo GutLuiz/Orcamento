@@ -34,7 +34,9 @@ namespace Orcamento.Controllers
             var resultado = await _authService.LoginUsuario(dto);
 
             if (resultado == null)
+            {
                 return Unauthorized("Email ou senha inválidos!");
+            }
 
             return Ok(new
             {
@@ -49,7 +51,9 @@ namespace Orcamento.Controllers
             var resultado = await _authService.RefreshToken(dto.RefreshToken);
 
             if (resultado == null)
+            {
                 return Unauthorized("Refresh token inválido ou expirado.");
+            }
 
             return Ok(new
             {
@@ -64,7 +68,9 @@ namespace Orcamento.Controllers
             var sucesso = await _authService.Logout(dto.RefreshToken);
 
             if (!sucesso)
+            {
                 return BadRequest("Token inválido.");
+            }
 
             return Ok("Logout realizado com sucesso.");
         }
